@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart' show Intl;
@@ -383,10 +384,10 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
   final FocusNode _gridFocusNode = FocusNode();
 
   final LinkedScrollControllerGroup _verticalScroll =
-      LinkedScrollControllerGroup();
+  LinkedScrollControllerGroup();
 
   final LinkedScrollControllerGroup _horizontalScroll =
-      LinkedScrollControllerGroup();
+  LinkedScrollControllerGroup();
 
   final List<Function()> _disposeList = [];
 
@@ -595,13 +596,22 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
 
   KeyEventResult _handleGridFocusOnKey(FocusNode focusNode, RawKeyEvent event) {
     if (_keyManager.eventResult.isSkip == false) {
-      _keyManager.subject.add(PlutoKeyManagerEvent(
+      PlutoKeyManagerEvent plutoKeyEvent = PlutoKeyManagerEvent(
         focusNode: focusNode,
         event: event,
-      ));
+      );
+      _keyManager.subject.add(plutoKeyEvent);
+
+      bool isDefaultAction =  _keyManager.isDefaultAction(plutoKeyEvent);
+      bool shortcutHasAction = isDefaultAction ? false : stateManager.configuration.shortcut.shortcutHasAction(
+          keyEvent: plutoKeyEvent,
+          state: RawKeyboard.instance
+      );
+
+      return _keyManager.eventResult.consume(isDefaultAction || shortcutHasAction ? KeyEventResult.handled : KeyEventResult.ignored);
     }
 
-    return _keyManager.eventResult.consume(KeyEventResult.handled);
+    return _keyManager.eventResult.consume(KeyEventResult.ignored);
   }
 
   @override
@@ -922,7 +932,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
       );
 
       final double posX =
-          isLTR ? size.width - s.width + PlutoGridSettings.gridBorderWidth : 0;
+      isLTR ? size.width - s.width + PlutoGridSettings.gridBorderWidth : 0;
 
       positionChild(
         _StackName.rightFrozenColumns,
@@ -975,7 +985,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
       );
 
       final double posX =
-          isLTR ? bodyLeftOffset : size.width - s.width - bodyRightOffset;
+      isLTR ? bodyLeftOffset : size.width - s.width - bodyRightOffset;
 
       positionChild(
         _StackName.bodyColumns,
@@ -999,7 +1009,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
       _stateManager.columnFooterHeight = s.height;
 
       final double posX =
-          isLTR ? bodyLeftOffset : size.width - s.width - bodyRightOffset;
+      isLTR ? bodyLeftOffset : size.width - s.width - bodyRightOffset;
 
       positionChild(
         _StackName.bodyColumnFooters,
@@ -1113,7 +1123,7 @@ class PlutoGridLayoutDelegate extends MultiChildLayoutDelegate {
       );
 
       final double posX =
-          isLTR ? size.width - s.width + PlutoGridSettings.gridBorderWidth : 0;
+      isLTR ? size.width - s.width + PlutoGridSettings.gridBorderWidth : 0;
 
       positionChild(
         _StackName.rightFrozenColumnFooters,
@@ -1477,7 +1487,7 @@ class PlutoScrollBehavior extends MaterialScrollBehavior {
     required this.isMobile,
     Set<PointerDeviceKind>? userDragDevices,
   })  : _dragDevices = userDragDevices ??
-            (isMobile ? _mobileDragDevices : _desktopDragDevices),
+      (isMobile ? _mobileDragDevices : _desktopDragDevices),
         super();
 
   final bool isMobile;
@@ -1502,10 +1512,10 @@ class PlutoScrollBehavior extends MaterialScrollBehavior {
 
   @override
   Widget buildScrollbar(
-    BuildContext context,
-    Widget child,
-    ScrollableDetails details,
-  ) {
+      BuildContext context,
+      Widget child,
+      ScrollableDetails details,
+      ) {
     return child;
   }
 }
@@ -1558,7 +1568,7 @@ abstract class PlutoGridSettings {
 
   /// Column title - padding
   static const EdgeInsets columnTitlePadding =
-      EdgeInsets.symmetric(horizontal: 10);
+  EdgeInsets.symmetric(horizontal: 10);
 
   static const EdgeInsets columnFilterPadding = EdgeInsets.all(5);
 

@@ -46,7 +46,7 @@ class PlutoGridKeyManager {
   });
 
   final PublishSubject<PlutoKeyManagerEvent> _subject =
-      PublishSubject<PlutoKeyManagerEvent>();
+  PublishSubject<PlutoKeyManagerEvent>();
 
   PublishSubject<PlutoKeyManagerEvent> get subject => _subject;
 
@@ -64,13 +64,17 @@ class PlutoGridKeyManager {
     final normalStream = _subject.stream.where((event) => !event.needsThrottle);
 
     final movingStream =
-        _subject.stream.where((event) => event.needsThrottle).transform(
-              ThrottleStreamTransformer(
-                (_) => TimerStream(_, const Duration(milliseconds: 1)),
-              ),
-            );
+    _subject.stream.where((event) => event.needsThrottle).transform(
+      ThrottleStreamTransformer(
+            (_) => TimerStream(_, const Duration(milliseconds: 1)),
+      ),
+    );
 
     _subscription = MergeStream([normalStream, movingStream]).listen(_handler);
+  }
+
+  bool isDefaultAction(PlutoKeyManagerEvent keyEvent){
+    return !keyEvent.isModifierPressed && keyEvent.isCharacter;
   }
 
   void _handler(PlutoKeyManagerEvent keyEvent) {
@@ -88,7 +92,7 @@ class PlutoGridKeyManager {
   }
 
   void _handleDefaultActions(PlutoKeyManagerEvent keyEvent) {
-    if (!keyEvent.isModifierPressed && keyEvent.isCharacter) {
+    if (isDefaultAction(keyEvent)) {
       _handleCharacter(keyEvent);
       return;
     }
