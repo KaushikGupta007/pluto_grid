@@ -272,6 +272,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
                 disabledBorder: _disabledBorder,
                 focusedBorder: _enabledBorder,
                 contentPadding: const EdgeInsets.all(5),
+                isDense: false,
               ),
             ),
           ),

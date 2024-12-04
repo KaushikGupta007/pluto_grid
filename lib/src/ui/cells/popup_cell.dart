@@ -222,6 +222,7 @@ mixin PopupCellState<T extends PopupCell> on State<T>
           borderSide: BorderSide.none,
         ),
         contentPadding: EdgeInsets.zero,
+        isDense: false,
         suffixIcon: icon == null
             ? null
             : IconButton(
