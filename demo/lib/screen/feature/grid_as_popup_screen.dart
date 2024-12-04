@@ -129,6 +129,7 @@ class _GridAsPopupScreenState extends State<GridAsPopupScreen> {
                   Radius.circular(10.0),
                 ),
               ),
+              isDense: false,
             ),
           ),
           const SizedBox(
@@ -148,6 +149,7 @@ class _GridAsPopupScreenState extends State<GridAsPopupScreen> {
                   Radius.circular(10.0),
                 ),
               ),
+              isDense: false,
             ),
           ),
         ],
