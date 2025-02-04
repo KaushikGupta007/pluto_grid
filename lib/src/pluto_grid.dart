@@ -602,13 +602,12 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
       );
       _keyManager.subject.add(plutoKeyEvent);
 
-      bool isDefaultAction =  _keyManager.isDefaultAction(plutoKeyEvent);
-      bool shortcutHasAction = isDefaultAction ? false : stateManager.configuration.shortcut.shortcutHasAction(
+      bool shortcutHasAction = stateManager.configuration.shortcut.shortcutHasAction(
           keyEvent: plutoKeyEvent,
           state: RawKeyboard.instance
       );
 
-      return _keyManager.eventResult.consume(isDefaultAction || shortcutHasAction ? KeyEventResult.handled : KeyEventResult.ignored);
+      return _keyManager.eventResult.consume(shortcutHasAction ? KeyEventResult.handled : KeyEventResult.ignored);
     }
 
     return _keyManager.eventResult.consume(KeyEventResult.ignored);

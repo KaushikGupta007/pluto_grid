@@ -95,8 +95,8 @@ class PlutoGridShortcut {
     LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.enter):
         const PlutoGridActionDefaultEnterKey(),
     // Default escape key action
-    LogicalKeySet(LogicalKeyboardKey.escape):
-        const PlutoGridActionDefaultEscapeKey(),
+    // LogicalKeySet(LogicalKeyboardKey.escape):
+    //     const PlutoGridActionDefaultEscapeKey(),
     // Move cell focus to edge
     LogicalKeySet(LogicalKeyboardKey.home):
         const PlutoGridActionMoveCellFocusToEdge(PlutoMoveDirection.left),
@@ -135,7 +135,7 @@ class PlutoGridShortcut {
     LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyV):
         const PlutoGridActionPasteValues(),
     // Select all cells or rows
-    LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyA):
-        const PlutoGridActionSelectAll(),
+    // LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyA):
+    //     const PlutoGridActionSelectAll(),
   };
 }
