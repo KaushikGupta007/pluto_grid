@@ -29,6 +29,7 @@ export './src/manager/pluto_grid_state_manager.dart';
 export './src/manager/shortcut/shortcut.dart';
 export './src/model/pluto_cell.dart';
 export './src/model/pluto_column.dart';
+export './src/model/pluto_decimal_column.dart';
 export './src/model/pluto_column_group.dart';
 export './src/model/pluto_column_type.dart';
 export './src/model/pluto_row.dart';
