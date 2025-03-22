@@ -27,6 +27,9 @@ enum PlutoAggregateColumnType {
 
   /// Returns the total count.
   count,
+
+  /// Returns the sum of all decimal values.
+  decimalSum,
 }
 
 /// {@template pluto_aggregate_column_iterate_row_type}
@@ -168,6 +171,8 @@ class PlutoAggregateColumnFooter extends PlutoStatefulWidget {
 
   final bool formatAsCurrency;
 
+  final int decimalDigits;
+
   const PlutoAggregateColumnFooter({
     required this.rendererContext,
     required this.type,
@@ -181,6 +186,7 @@ class PlutoAggregateColumnFooter extends PlutoStatefulWidget {
     this.alignment,
     this.padding,
     this.formatAsCurrency = false,
+    this.decimalDigits = 2,
     super.key,
   });
 
@@ -199,6 +205,7 @@ class PlutoAggregateColumnFooterState
     required Iterable<PlutoRow> rows,
     required PlutoColumn column,
     PlutoAggregateFilter? filter,
+    required int decimalDigits,
   }) _aggregator;
 
   @override
@@ -259,7 +266,9 @@ class PlutoAggregateColumnFooterState
   void initState() {
     super.initState();
 
-    _numberFormat = widget.formatAsCurrency
+    _numberFormat = widget.type == PlutoAggregateColumnType.decimalSum
+        ? NumberFormat.decimalPatternDigits(locale: "en_IN", decimalDigits: widget.decimalDigits)
+        : widget.formatAsCurrency
         ? NumberFormat.simpleCurrency(locale: widget.locale)
         : NumberFormat(widget.format, widget.locale);
 
@@ -276,6 +285,7 @@ class PlutoAggregateColumnFooterState
         rows: rows,
         column: column,
         filter: widget.filter,
+        decimalDigits: widget.decimalDigits,
       ),
     );
   }
@@ -296,6 +306,9 @@ class PlutoAggregateColumnFooterState
         break;
       case PlutoAggregateColumnType.count:
         _aggregator = PlutoAggregateHelper.count;
+        break;
+      case PlutoAggregateColumnType.decimalSum:
+        _aggregator = PlutoAggregateHelper.decimalSum;
         break;
     }
   }

@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart'
     show IterableNumberExtension, IterableExtension;
+import 'package:decimal/decimal.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class PlutoAggregateHelper {
@@ -7,6 +8,7 @@ class PlutoAggregateHelper {
     required Iterable<PlutoRow> rows,
     required PlutoColumn column,
     PlutoAggregateFilter? filter,
+    int? decimalDigits,
   }) {
     if (column.type is! PlutoColumnTypeWithNumberFormat ||
         !_hasColumnField(rows: rows, column: column)) {
@@ -30,6 +32,7 @@ class PlutoAggregateHelper {
     required Iterable<PlutoRow> rows,
     required PlutoColumn column,
     PlutoAggregateFilter? filter,
+    int? decimalDigits,
   }) {
     if (column.type is! PlutoColumnTypeWithNumberFormat ||
         !_hasColumnField(rows: rows, column: column)) {
@@ -53,6 +56,7 @@ class PlutoAggregateHelper {
     required Iterable<PlutoRow> rows,
     required PlutoColumn column,
     PlutoAggregateFilter? filter,
+    int? decimalDigits,
   }) {
     if (column.type is! PlutoColumnTypeWithNumberFormat ||
         !_hasColumnField(rows: rows, column: column)) {
@@ -74,6 +78,7 @@ class PlutoAggregateHelper {
     required Iterable<PlutoRow> rows,
     required PlutoColumn column,
     PlutoAggregateFilter? filter,
+    int? decimalDigits,
   }) {
     if (column.type is! PlutoColumnTypeWithNumberFormat ||
         !_hasColumnField(rows: rows, column: column)) {
@@ -95,6 +100,7 @@ class PlutoAggregateHelper {
     required Iterable<PlutoRow> rows,
     required PlutoColumn column,
     PlutoAggregateFilter? filter,
+    int? decimalDigits,
   }) {
     if (!_hasColumnField(rows: rows, column: column)) {
       return 0;
@@ -105,6 +111,30 @@ class PlutoAggregateHelper {
         : rows;
 
     return foundItems.length;
+  }
+
+  static num? decimalSum({
+    required Iterable<PlutoRow> rows,
+    required PlutoColumn column,
+    PlutoAggregateFilter? filter,
+    required int decimalDigits,
+  }) {
+    if (!_hasColumnField(rows: rows, column: column)) {
+      return 0;
+    }
+
+    final foundItems = filter != null
+        ? rows.where((row) => filter(row.cells[column.field]!))
+        : rows;
+
+
+    final Decimal sum = foundItems.fold(Decimal.zero, (p, c) {
+      final value = c.cells[column.field]!.value;
+      final Decimal decimalValue = value is Decimal ? value : Decimal.zero;
+      return p + decimalValue;
+    });
+
+    return num.parse(sum.toStringAsFixed(decimalDigits));
   }
 
   static bool _hasColumnField({
