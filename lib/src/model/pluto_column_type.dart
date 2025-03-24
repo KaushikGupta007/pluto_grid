@@ -1,3 +1,5 @@
+import 'package:decimal/decimal.dart';
+import 'package:decimal/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -584,7 +586,7 @@ mixin PlutoColumnTypeWithNumberFormat {
       number = 0;
     }
 
-    return numberFormat.format(number);
+    return numberFormat.format(DecimalIntl(Decimal.parse(number.toString())));
   }
 
   /// Convert [String] converted to [applyFormat] to [number].
