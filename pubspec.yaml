@@ -3,6 +3,7 @@ description: PlutoGrid is a dataGrid that can be controlled by the keyboard on d
 version: 7.0.2
 homepage: https://pluto.weblaze.dev
 repository: https://github.com/bosskmk/pluto_grid
+publish_to: none
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
@@ -16,7 +17,10 @@ dependencies:
   intl: ^0.18.0
   rxdart: ^0.27.7
   collection: ^1.17.1
-  decimal: ^2.3.3
+  decimal:
+    git:
+      url: https://github.com/KaushikGupta007/dart-decimal
+      ref: 2.3.3
 
 dev_dependencies:
   flutter_test:
