@@ -586,7 +586,7 @@ mixin PlutoColumnTypeWithNumberFormat {
       number = 0;
     }
 
-    return numberFormat.format(DecimalIntl(Decimal.parse(number.toStringAsFixed(7))));
+    return numberFormat.format(DecimalIntl(Decimal.parse(number.toStringAsFixed(10))));
   }
 
   /// Convert [String] converted to [applyFormat] to [number].
