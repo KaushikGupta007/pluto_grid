@@ -30,7 +30,9 @@ dependencies:
   flutter:
     sdk: flutter
   pluto_grid:
-    path: ../../../
+    git:
+      url: https://github.com/KaushikGupta007/pluto_grid.git
+      ref: shortcuts_fix
   pluto_grid_export:
     path: ../
   file_saver: ^0.1.0
