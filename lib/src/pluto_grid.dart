@@ -77,6 +77,7 @@ class PlutoGrid extends PlutoStatefulWidget {
     this.configuration = const PlutoGridConfiguration(),
     this.notifierFilterResolver,
     this.mode = PlutoGridMode.normal,
+    this.autofocus = true,
   }) : super(key: key);
 
   /// {@template pluto_grid_property_columns}
@@ -325,6 +326,9 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// {@macro pluto_grid_mode_popup}
   final PlutoGridMode mode;
 
+  /// when you need to disable autofocus on selecting mode
+  final bool autofocus;
+
   /// [setDefaultLocale] sets locale when [Intl] package is used in [PlutoGrid].
   ///
   /// {@template intl_default_locale}
@@ -569,7 +573,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
   }
 
   void _initSelectMode() {
-    if (!widget.mode.isSelectMode) return;
+    if (!widget.mode.isSelectMode || !widget.autofocus) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_stateManager.currentCell == null) {
