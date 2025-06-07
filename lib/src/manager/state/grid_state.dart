@@ -189,7 +189,7 @@ mixin GridState implements IPlutoGridState {
 
   @override
   void handleOnSelected() {
-    if (mode.isSelectMode == true && onSelected != null) {
+    if (mode.isSelectMode == true && (currentColumn?.readOnly ?? true) && onSelected != null) {
       onSelected!(
         PlutoGridOnSelectedEvent(
           row: currentRow,

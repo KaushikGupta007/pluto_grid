@@ -91,19 +91,19 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
     super.dispose();
   }
 
-  void _restoreText() {
-    if (_cellEditingStatus.isNotChanged) {
-      return;
-    }
-
-    _textController.text = _initialCellValue.toString();
-
-    widget.stateManager.changeCellValue(
-      widget.stateManager.currentCell!,
-      _initialCellValue,
-      notify: false,
-    );
-  }
+  // void _restoreText() {
+  //   if (_cellEditingStatus.isNotChanged) {
+  //     return;
+  //   }
+  //
+  //   _textController.text = _initialCellValue.toString();
+  //
+  //   widget.stateManager.changeCellValue(
+  //     widget.stateManager.currentCell!,
+  //     _initialCellValue,
+  //     notify: false,
+  //   );
+  // }
 
   bool _moveHorizontal(PlutoKeyManagerEvent keyManager) {
     if (!keyManager.isHorizontal) {
@@ -184,7 +184,7 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
 
     final skip = !(keyManager.isVertical ||
         _moveHorizontal(keyManager) ||
-        keyManager.isEsc ||
+        //keyManager.isEsc ||
         keyManager.isTab ||
         keyManager.isF3 ||
         keyManager.isEnter);
@@ -210,9 +210,9 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
     }
 
     // ESC 는 편집된 문자열을 원래 문자열로 돌이킨다.
-    if (keyManager.isEsc) {
-      _restoreText();
-    }
+    // if (keyManager.isEsc) {
+    //   _restoreText();
+    // }
 
     // KeyManager 로 이벤트 처리를 위임 한다.
     widget.stateManager.keyManager!.subject.add(keyManager);
