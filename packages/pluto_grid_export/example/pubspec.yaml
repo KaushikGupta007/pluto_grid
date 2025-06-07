@@ -32,7 +32,7 @@ dependencies:
   pluto_grid:
     git:
       url: https://github.com/KaushikGupta007/pluto_grid.git
-      ref: shortcuts_fix
+      ref: editable_mode
   pluto_grid_export:
     path: ../
   file_saver: ^0.1.0
