@@ -346,7 +346,7 @@ class PlutoGridActionDefaultEnterKey extends PlutoGridShortcutAction {
     required PlutoGridStateManager stateManager,
   }) {
     // In SelectRow mode, the current Row is passed to the onSelected callback.
-    if (stateManager.mode.isSelectMode && (stateManager.currentColumn?.readOnly ?? true) && stateManager.onSelected != null) {
+    if (stateManager.mode.isSelectMode && !(stateManager.currentColumn?.enableEditingMode ?? false) && stateManager.onSelected != null) {
       stateManager.onSelected!(PlutoGridOnSelectedEvent(
         row: stateManager.currentRow,
         rowIdx: stateManager.currentRowIdx,
@@ -454,7 +454,7 @@ class PlutoGridActionDefaultEscapeKey extends PlutoGridShortcutAction {
     required PlutoKeyManagerEvent keyEvent,
     required PlutoGridStateManager stateManager,
   }) {
-    if ((stateManager.mode.isSelectMode && (stateManager.currentColumn?.readOnly ?? true)) ||
+    if ((stateManager.mode.isSelectMode && !(stateManager.currentColumn?.enableEditingMode ?? false)) ||
         (stateManager.mode.isPopup && !stateManager.isEditing)) {
       if (stateManager.onSelected != null) {
         stateManager.clearCurrentSelecting();
