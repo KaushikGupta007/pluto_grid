@@ -41,11 +41,15 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       title: 'Name',
       field: 'name',
       type: PlutoColumnType.text(),
+      enableAutoEditing: true,
+      enableEditingMode: true,
     ),
     PlutoColumn(
       title: 'Age',
       field: 'age',
       type: PlutoColumnType.number(),
+      enableAutoEditing: true,
+      enableEditingMode: true,
     ),
     PlutoColumn(
       title: 'Role',
@@ -60,6 +64,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       title: 'Joined',
       field: 'joined',
       type: PlutoColumnType.date(),
+      readOnly: true,
     ),
     PlutoColumn(
       title: 'Working time',
@@ -148,6 +153,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       body: Container(
         padding: const EdgeInsets.all(15),
         child: PlutoGrid(
+          mode: PlutoGridMode.selectWithOneTap,
           columns: columns,
           rows: rows,
           columnGroups: columnGroups,
@@ -155,10 +161,15 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
             stateManager = event.stateManager;
             stateManager.setShowColumnFilter(true);
           },
+          onSelected: (PlutoGridOnSelectedEvent event){
+            print(event);
+          },
           onChanged: (PlutoGridOnChangedEvent event) {
             print(event);
           },
-          configuration: const PlutoGridConfiguration(),
+          configuration: const PlutoGridConfiguration(
+            enableMoveHorizontalInEditing: true,
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart' show Intl;
@@ -76,6 +77,7 @@ class PlutoGrid extends PlutoStatefulWidget {
     this.configuration = const PlutoGridConfiguration(),
     this.notifierFilterResolver,
     this.mode = PlutoGridMode.normal,
+    this.autofocus = true,
   });
 
   /// {@template pluto_grid_property_columns}
@@ -324,6 +326,9 @@ class PlutoGrid extends PlutoStatefulWidget {
   /// {@macro pluto_grid_mode_popup}
   final PlutoGridMode mode;
 
+  /// when you need to disable autofocus on selecting mode
+  final bool autofocus;
+
   /// [setDefaultLocale] sets locale when [Intl] package is used in [PlutoGrid].
   ///
   /// {@template intl_default_locale}
@@ -568,7 +573,7 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
   }
 
   void _initSelectMode() {
-    if (!widget.mode.isSelectMode) return;
+    if (!widget.mode.isSelectMode || !widget.autofocus) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_stateManager.currentCell == null) {
@@ -595,13 +600,21 @@ class PlutoGridState extends PlutoStateWithChange<PlutoGrid> {
 
   KeyEventResult _handleGridFocusOnKey(FocusNode focusNode, KeyEvent event) {
     if (_keyManager.eventResult.isSkip == false) {
-      _keyManager.subject.add(PlutoKeyManagerEvent(
+      PlutoKeyManagerEvent plutoKeyEvent = PlutoKeyManagerEvent(
         focusNode: focusNode,
         event: event,
-      ));
+      );
+      _keyManager.subject.add(plutoKeyEvent);
+
+      bool shortcutHasAction = stateManager.configuration.shortcut.shortcutHasAction(
+        keyEvent: plutoKeyEvent,
+        state: HardwareKeyboard.instance
+      );
+
+      return _keyManager.eventResult.consume(shortcutHasAction ? KeyEventResult.handled : KeyEventResult.ignored);
     }
 
-    return _keyManager.eventResult.consume(KeyEventResult.handled);
+    return _keyManager.eventResult.consume(KeyEventResult.ignored);
   }
 
   @override
@@ -1643,7 +1656,7 @@ enum PlutoGridMode {
 
   bool get isReadOnly => this == PlutoGridMode.readOnly;
 
-  bool get isEditableMode => isNormal || isPopup;
+  bool get isEditableMode => isNormal || isPopup || isSingleSelectMode;
 
   bool get isSelectMode => isSingleSelectMode || isMultiSelectMode;
 

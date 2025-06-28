@@ -1,4 +1,4 @@
-import 'package:faker/faker.dart';
+import 'package:faker/faker.dart' as f;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -439,7 +439,7 @@ class _HeaderState extends State<_Header> {
       0,
       [
         PlutoColumn(
-          title: faker.food.cuisine(),
+          title: f.faker.food.cuisine(),
           field: 'new_${DateTime.now()}',
           type: PlutoColumnType.text(),
           frozen: frozen,

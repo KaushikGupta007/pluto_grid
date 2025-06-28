@@ -65,6 +65,12 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
     _textController.addListener(() {
       _handleOnChanged(_textController.text.toString());
     });
+
+    cellFocus.addListener(() {
+      if(!cellFocus.hasFocus && _cellEditingStatus.isChanged){
+        _changeValue();
+      }
+    });
   }
 
   @override
@@ -97,6 +103,7 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
     }
 
     _textController.text = _initialCellValue.toString();
+    _textController.selection = TextSelection(baseOffset: 0, extentOffset: _textController.text.length);
 
     widget.stateManager.changeCellValue(
       widget.stateManager.currentCell!,
@@ -135,6 +142,11 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
 
   void _changeValue() {
     if (formattedValue == _textController.text) {
+      return;
+    }
+
+    //if column is hidden and value is changed
+    if(widget.stateManager.columnIndex(widget.cell.column) == null){
       return;
     }
 
