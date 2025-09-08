@@ -474,6 +474,7 @@ class FilterPopupState {
         type: PlutoColumnType.select(columnMap.keys.toList(growable: false)),
         enableFilterMenuItem: false,
         applyFormatterInEditing: true,
+        enableEditingMode: true,
         formatter: (dynamic value) {
           return columnMap[value] ?? '';
         },
@@ -484,6 +485,7 @@ class FilterPopupState {
         type: PlutoColumnType.select(configuration.columnFilter.filters),
         enableFilterMenuItem: false,
         applyFormatterInEditing: true,
+        enableEditingMode: true,
         formatter: (dynamic value) {
           return (value?.title ?? '').toString();
         },
@@ -493,6 +495,7 @@ class FilterPopupState {
         field: FilterHelper.filterFieldValue,
         type: PlutoColumnType.text(),
         enableFilterMenuItem: false,
+        enableEditingMode: true,
       ),
     ];
   }
