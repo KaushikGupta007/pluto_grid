@@ -125,6 +125,8 @@ class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
 
   bool _isFetching = false;
 
+  int? _pendingPage;
+
   PlutoGridStateManager get stateManager => widget.stateManager;
 
   @override
@@ -165,9 +167,13 @@ class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
   }
 
   void setPage(int page) async {
-    if (_isFetching) return;
+    if (_isFetching) {
+      _pendingPage = page;
+      return;
+    }
 
     _isFetching = true;
+    _pendingPage = null;
 
     stateManager.setShowLoading(true, level: PlutoGridLoadingLevel.rows);
 
@@ -185,6 +191,8 @@ class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
       stateManager.refRows.clearFromOriginal();
       stateManager.insertRows(0, data.rows);
 
+      final pendingPage = _pendingPage;
+
       setState(() {
         _page = page;
 
@@ -194,6 +202,10 @@ class _PlutoLazyPaginationState extends State<PlutoLazyPagination> {
       });
 
       stateManager.setShowLoading(false);
+
+      if (pendingPage != null) {
+        setPage(pendingPage);
+      }
     });
   }
 

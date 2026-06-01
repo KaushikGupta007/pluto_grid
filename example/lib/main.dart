@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
@@ -15,161 +17,135 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const PlutoGridExamplePage(),
+      home: const RowLazyPaginationPage(),
     );
   }
 }
 
-/// PlutoGrid Example
-//
-/// For more examples, go to the demo web link on the github below.
-class PlutoGridExamplePage extends StatefulWidget {
-  const PlutoGridExamplePage({Key? key}) : super(key: key);
+class RowLazyPaginationPage extends StatefulWidget {
+  const RowLazyPaginationPage({Key? key}) : super(key: key);
 
   @override
-  State<PlutoGridExamplePage> createState() => _PlutoGridExamplePageState();
+  State<RowLazyPaginationPage> createState() => _RowLazyPaginationPageState();
 }
 
-class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
-  final List<PlutoColumn> columns = <PlutoColumn>[
-    PlutoColumn(
-      title: 'Id',
-      field: 'id',
-      type: PlutoColumnType.text(),
-    ),
-    PlutoColumn(
-      title: 'Name',
-      field: 'name',
-      type: PlutoColumnType.text(),
-      enableAutoEditing: true,
-      enableEditingMode: true,
-    ),
-    PlutoColumn(
-      title: 'Age',
-      field: 'age',
-      type: PlutoColumnType.number(),
-      enableAutoEditing: true,
-      enableEditingMode: true,
-    ),
-    PlutoColumn(
-      title: 'Role',
-      field: 'role',
-      type: PlutoColumnType.select(<String>[
-        'Programmer',
-        'Designer',
-        'Owner',
-      ]),
-    ),
-    PlutoColumn(
-      title: 'Joined',
-      field: 'joined',
-      type: PlutoColumnType.date(),
-      readOnly: true,
-    ),
-    PlutoColumn(
-      title: 'Working time',
-      field: 'working_time',
-      type: PlutoColumnType.time(),
-    ),
-    PlutoColumn(
-      title: 'salary',
-      field: 'salary',
-      type: PlutoColumnType.currency(),
-      footerRenderer: (rendererContext) {
-        return PlutoAggregateColumnFooter(
-          rendererContext: rendererContext,
-          formatAsCurrency: true,
-          type: PlutoAggregateColumnType.sum,
-          format: '#,###',
-          alignment: Alignment.center,
-          titleSpanBuilder: (text) {
-            return [
-              const TextSpan(
-                text: 'Sum',
-                style: TextStyle(color: Colors.red),
-              ),
-              const TextSpan(text: ' : '),
-              TextSpan(text: text),
-            ];
-          },
-        );
-      },
-    ),
-  ];
-
-  final List<PlutoRow> rows = [
-    PlutoRow(
-      cells: {
-        'id': PlutoCell(value: 'user1'),
-        'name': PlutoCell(value: 'Mike'),
-        'age': PlutoCell(value: 20),
-        'role': PlutoCell(value: 'Programmer'),
-        'joined': PlutoCell(value: '2021-01-01'),
-        'working_time': PlutoCell(value: '09:00'),
-        'salary': PlutoCell(value: 300),
-      },
-    ),
-    PlutoRow(
-      cells: {
-        'id': PlutoCell(value: 'user2'),
-        'name': PlutoCell(value: 'Jack'),
-        'age': PlutoCell(value: 25),
-        'role': PlutoCell(value: 'Designer'),
-        'joined': PlutoCell(value: '2021-02-01'),
-        'working_time': PlutoCell(value: '10:00'),
-        'salary': PlutoCell(value: 400),
-      },
-    ),
-    PlutoRow(
-      cells: {
-        'id': PlutoCell(value: 'user3'),
-        'name': PlutoCell(value: 'Suzi'),
-        'age': PlutoCell(value: 40),
-        'role': PlutoCell(value: 'Owner'),
-        'joined': PlutoCell(value: '2021-03-01'),
-        'working_time': PlutoCell(value: '11:00'),
-        'salary': PlutoCell(value: 700),
-      },
-    ),
-  ];
-
-  /// columnGroups that can group columns can be omitted.
-  final List<PlutoColumnGroup> columnGroups = [
-    PlutoColumnGroup(title: 'Id', fields: ['id'], expandedColumn: true),
-    PlutoColumnGroup(title: 'User information', fields: ['name', 'age']),
-    PlutoColumnGroup(title: 'Status', children: [
-      PlutoColumnGroup(title: 'A', fields: ['role'], expandedColumn: true),
-      PlutoColumnGroup(title: 'Etc.', fields: ['joined', 'working_time']),
-    ]),
-  ];
-
-  /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
-  /// You can manipulate the grid dynamically at runtime by passing this through the [onLoaded] callback.
+class _RowLazyPaginationPageState extends State<RowLazyPaginationPage> {
   late final PlutoGridStateManager stateManager;
+
+  final List<PlutoColumn> columns = [];
+  final List<PlutoRow> rows = [];
+  final List<PlutoRow> fakeFetchedRows = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    columns.addAll([
+      PlutoColumn(title: 'Id', field: 'id', type: PlutoColumnType.text()),
+      PlutoColumn(title: 'Name', field: 'name', type: PlutoColumnType.text()),
+      PlutoColumn(title: 'Age', field: 'age', type: PlutoColumnType.number()),
+      PlutoColumn(title: 'Role', field: 'role', type: PlutoColumnType.text()),
+    ]);
+
+    final rng = Random();
+    const firstNames = [
+      'Al', 'Alan', 'Alba', 'Albert', 'Alberto', 'Alec', 'Alen',
+      'Alex', 'Alexa', 'Alexander', 'Alexandra', 'Alexis',
+      'Sam', 'Sama', 'Samantha', 'Samir', 'Samuel',
+      'Chris', 'Christa', 'Christian', 'Christina', 'Christine',
+      'Jo', 'Joe', 'Joel', 'John', 'Johnny', 'Jon', 'Jonathan',
+    ];
+    const lastNames = [
+      'Smith', 'Smithson', 'Smithfield',
+      'Brown', 'Browne', 'Brownell',
+      'Clark', 'Clarke', 'Clarkson',
+      'Lee', 'Leeds', 'Leeson',
+      'King', 'Kingston', 'Kingsley',
+    ];
+    const roles = ['Programmer', 'Designer', 'Owner', 'Manager', 'Analyst', 'Tester'];
+    for (int i = 0; i < 1000; i++) {
+      final first = firstNames[rng.nextInt(firstNames.length)];
+      final last = lastNames[rng.nextInt(lastNames.length)];
+      fakeFetchedRows.add(PlutoRow(cells: {
+        'id': PlutoCell(value: 'user${i + 1}'),
+        'name': PlutoCell(value: '$first $last'),
+        'age': PlutoCell(value: 20 + rng.nextInt(40)),
+        'role': PlutoCell(value: roles[rng.nextInt(roles.length)]),
+      }));
+    }
+  }
+
+  Future<PlutoLazyPaginationResponse> fetch(
+    PlutoLazyPaginationRequest request,
+  ) async {
+    List<PlutoRow> tempList = fakeFetchedRows;
+
+    if (request.filterRows.isNotEmpty) {
+      final filter = FilterHelper.convertRowsToFilter(
+        request.filterRows,
+        stateManager.refColumns,
+      );
+      tempList = fakeFetchedRows.where(filter!).toList();
+    }
+
+    if (request.sortColumn != null && !request.sortColumn!.sort.isNone) {
+      tempList = [...tempList];
+      tempList.sort((a, b) {
+        final sortA = request.sortColumn!.sort.isAscending ? a : b;
+        final sortB = request.sortColumn!.sort.isAscending ? b : a;
+        return request.sortColumn!.type.compare(
+          sortA.cells[request.sortColumn!.field]!.valueForSorting,
+          sortB.cells[request.sortColumn!.field]!.valueForSorting,
+        );
+      });
+    }
+
+    const pageSize = 100;
+    final page = request.page;
+    final totalPage = (tempList.length / pageSize).ceil();
+    final start = (page - 1) * pageSize;
+    final end = start + pageSize;
+
+    final fetchedRows = tempList.getRange(
+      max(0, start),
+      min(tempList.length, end),
+    );
+
+    await Future.delayed(const Duration(milliseconds: 2000));
+
+    return PlutoLazyPaginationResponse(
+      totalPage: totalPage,
+      rows: fetchedRows.toList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      appBar: AppBar(title: const Text('Row Lazy Pagination')),
+      body: Padding(
         padding: const EdgeInsets.all(15),
         child: PlutoGrid(
-          mode: PlutoGridMode.selectWithOneTap,
           columns: columns,
           rows: rows,
-          columnGroups: columnGroups,
           onLoaded: (PlutoGridOnLoadedEvent event) {
             stateManager = event.stateManager;
             stateManager.setShowColumnFilter(true);
           },
-          onSelected: (PlutoGridOnSelectedEvent event){
-            print(event);
-          },
           onChanged: (PlutoGridOnChangedEvent event) {
             print(event);
           },
-          configuration: const PlutoGridConfiguration(
-            enableMoveHorizontalInEditing: true,
-          ),
+          configuration: const PlutoGridConfiguration(),
+          createFooter: (stateManager) {
+            return PlutoLazyPagination(
+              initialPage: 1,
+              initialFetch: true,
+              fetchWithSorting: true,
+              fetchWithFiltering: true,
+              fetch: fetch,
+              stateManager: stateManager,
+            );
+          },
         ),
       ),
     );
